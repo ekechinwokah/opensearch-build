@@ -25,6 +25,10 @@ class DistributionZip(Distribution):
     def config_path(self) -> str:
         return os.path.join(self.install_dir, "config", self.config_filename)
 
+    @property
+    def log_dir(self) -> str:
+        return os.path.join(self.install_dir, "logs")
+
     def install(self, bundle_name: str) -> None:
         logging.info(f"Installing {bundle_name} in {self.install_dir}")
         with ZipFile(bundle_name, "r") as zip:
@@ -33,7 +37,7 @@ class DistributionZip(Distribution):
     @property
     def start_cmd(self) -> str:
         start_cmd_map = {
-            "opensearch": ".\\opensearch-windows-install.bat",
+            "opensearch": "env OPENSEARCH_INITIAL_ADMIN_PASSWORD=myStrongPassword123! .\\opensearch-windows-install.bat",
             "opensearch-dashboards": ".\\opensearch-dashboards.bat",
         }
         return start_cmd_map[self.filename]

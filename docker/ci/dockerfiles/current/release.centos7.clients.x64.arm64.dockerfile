@@ -22,9 +22,9 @@ ARG CONTAINER_USER_HOME=/home/ci-runner
 USER 0
 
 # Add normal dependencies
-RUN yum clean all && yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
+RUN yum clean all && \
     yum update -y && \
-    yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq gh epel-release
+    yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq epel-release
 
 # Add Python dependencies
 RUN yum install -y @development zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel findutils
@@ -54,8 +54,8 @@ RUN if [[ `uname -m` = 'aarch64' ]]; then mkdir -p aarch64-builds && cd aarch64-
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib
 
 # Tools setup
-COPY --chown=0:0 config/yq-setup.sh /tmp/
-RUN /tmp/yq-setup.sh
+COPY --chown=0:0 config/yq-setup.sh config/gh-setup.sh /tmp/
+RUN yum install -y go && /tmp/yq-setup.sh && /tmp/gh-setup.sh
 
 # Install JDK
 RUN curl -SL https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jdk_x64_linux_hotspot_11.0.15_10.tar.gz -o /opt/jdk11.tar.gz && \
@@ -74,7 +74,7 @@ ENV JAVA_HOME=/opt/java/openjdk-11
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 # Installing higher version of maven 3.8.x
-RUN export MAVEN_URL=`curl -s https://maven.apache.org/download.cgi | grep -Eo '["\047].*.bin.tar.gz["\047]' | tr -d '"'`  && \
+RUN export MAVEN_URL=`curl -s https://maven.apache.org/download.cgi | grep -Eo '["\047].*.bin.tar.gz["\047]' | tr -d '"' | uniq | head -n 1`  && \
     mkdir -p $MAVEN_DIR && (curl -s $MAVEN_URL | tar xzf - --strip-components=1 -C $MAVEN_DIR) && \
     echo "export M2_HOME=$MAVEN_DIR" > /etc/profile.d/maven_path.sh && \
     echo "export M2=\$M2_HOME/bin" >> /etc/profile.d/maven_path.sh && \
@@ -95,7 +95,7 @@ RUN ln -sfn /usr/local/bin/python3.9 /usr/bin/python3 && \
     ln -sfn /usr/local/bin/pip3.9 /usr/bin/pip && \
     ln -sfn /usr/local/bin/pip3.9 /usr/local/bin/pip && \
     ln -sfn /usr/local/bin/pip3.9 /usr/bin/pip3 && \
-    pip3 install pip==23.1.2 && pip3 install pipenv==2023.6.12 awscli==1.22.12
+    pip3 install pip==23.1.2 && pip3 install pipenv==2023.6.12 awscli==1.32.17
 
 # Installing pip packages
 RUN pip3 install twine==4.0.2 cmake==3.24.1.1
@@ -135,17 +135,17 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 # Installing ruby related dependencies
 # Need to run either `. $CONTAINER_USER_HOME/.rvm/scripts/rvm` or `source $CONTAINER_USER_HOME/.rvm/scripts/rvm` 
 # and force bash if needed before using the rvm command for any activities, or rvm will not correctly use version
-RUN . $CONTAINER_USER_HOME/.rvm/scripts/rvm && rvm install 2.6.0 && rvm --default use 2.6.0 && \
+RUN . $CONTAINER_USER_HOME/.rvm/scripts/rvm && rvm install 2.6.0 && rvm install 3.1.2 && rvm --default use 2.6.0 && \
     rvm install jruby-9.3.0.0
 
-ENV RUBY_HOME=$CONTAINER_USER_HOME/.rvm/rubies/ruby-2.6.0/bin
 ENV RVM_HOME=$CONTAINER_USER_HOME/.rvm/bin
 ENV GEM_HOME=$CONTAINER_USER_HOME/.gem
 ENV GEM_PATH=$GEM_HOME
 ENV CARGO_PATH=$CONTAINER_USER_HOME/.cargo/bin
-ENV PATH=$RUBY_HOME:$RVM_HOME:$CARGO_PATH:$PATH
+ENV PATH=$RVM_HOME:$CARGO_PATH:$PATH
 
 # nvm environment variables
+# DO NOT add node version above 16 as CentOS7 does not support new versions
 ENV NVM_DIR $CONTAINER_USER_HOME/.nvm
 ENV NODE_VERSION 16.20.0
 ARG NODE_VERSION_LIST="10.24.1 14.19.1 14.20.0 14.20.1 14.21.3 16.20.0"

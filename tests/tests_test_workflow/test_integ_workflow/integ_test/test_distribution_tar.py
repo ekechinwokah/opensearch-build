@@ -34,6 +34,10 @@ class TestDistributionTar(unittest.TestCase):
         self.assertEqual(self.distribution_tar.config_path, os.path.join(self.work_dir, "opensearch-1.3.0", "config", "opensearch.yml"))
         self.assertEqual(self.distribution_tar_dashboards.config_path, os.path.join(self.work_dir, "opensearch-dashboards-1.3.0", "config", "opensearch_dashboards.yml"))
 
+    def test_log_dir(self) -> None:
+        self.assertEqual(self.distribution_tar.log_dir, os.path.join(self.work_dir, "opensearch-1.3.0", "logs"))
+        self.assertEqual(self.distribution_tar_dashboards.log_dir, os.path.join(self.work_dir, "opensearch-dashboards-1.3.0", "logs"))
+
     def test_install(self) -> None:
         with patch("tarfile.open") as mock_tarfile_open:
             mock_tarfile_extractall = MagicMock()
@@ -45,7 +49,7 @@ class TestDistributionTar(unittest.TestCase):
             mock_tarfile_extractall.assert_called_with(self.work_dir)
 
     def test_start_cmd(self) -> None:
-        self.assertEqual(self.distribution_tar.start_cmd, "./opensearch-tar-install.sh")
+        self.assertEqual(self.distribution_tar.start_cmd, "export OPENSEARCH_INITIAL_ADMIN_PASSWORD=myStrongPassword123! && ./opensearch-tar-install.sh")
         self.assertEqual(self.distribution_tar_dashboards.start_cmd, "./opensearch-dashboards")
 
     @patch("subprocess.check_call")

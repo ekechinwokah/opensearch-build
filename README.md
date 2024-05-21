@@ -43,7 +43,7 @@
 
 ### Releasing OpenSearch
 
-Please refer to the [release process document](./RELEASE_PROCESS_OPENSEARCH.md) for detailed information on how to release the OpenSearch and OpenSearch Dashboards software.
+Please refer to the [release process document](https://github.com/opensearch-project/opensearch-build/wiki/Releasing-the-Distribution) for detailed information on how to release the OpenSearch and OpenSearch Dashboards software.
 
 
 #### Releases and Versions
@@ -281,7 +281,7 @@ See [src/manifests_workflow](./src/manifests_workflow) for more information.
 
 ### Deploying Infrastructure
 
-Storage and access roles for the OpenSearch release process are codified in a [CDK project](./deployment/README.md).
+This project uses jenkins as the build infrastructure for building, testing and releasing the artifacts. The infrastructure is deployed using CDK and code can be found in [opensearch-ci](https://github.com/opensearch-project/opensearch-ci/tree/main) repository.
 
 ## Contributing
 
@@ -291,7 +291,7 @@ See [developer guide](DEVELOPER_GUIDE.md) and [how to contribute to this project
 
 If you find a bug, or have a feature request, please don't hesitate to open an issue in this repository.
 
-For more information, see [project website](https://opensearch.org/) and [documentation](https://docs-beta.opensearch.org/). If you need help and are unsure where to open an issue, try [forums](https://discuss.opendistrocommunity.dev/).
+For more information, see [project website](https://opensearch.org/) and [documentation](https://opensearch.org/docs/). If you need help and are unsure where to open an issue, try [forums](https://discuss.opendistrocommunity.dev/).
 
 ## Code of Conduct
 
@@ -299,7 +299,7 @@ This project has adopted the [Amazon Open Source Code of Conduct](CODE_OF_CONDUC
 
 ## Security
 
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public GitHub issue.
+If you discover a potential security issue in this project we ask that you notify OpenSearch Security directly via email to security@opensearch.org. Please do **not** create a public GitHub issue.
 
 ## License
 

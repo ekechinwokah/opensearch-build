@@ -3,7 +3,7 @@ schema-version: '1.0'
 name: OpenSearch Dashboards
 ci:
   image:
-    name: opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-dashboards-integtest-v4
+    name: opensearchstaging/ci-runner:ci-runner-almalinux8-opensearch-dashboards-integtest-v1
 components:
   - name: OpenSearch-Dashboards
     integ-test:
@@ -80,3 +80,10 @@ components:
         - without-security
       additional-cluster-configs:
         ml_commons_dashboards.enabled: true
+  - name: assistantDashboards
+    integ-test:
+      test-configs:
+        - with-security
+        - without-security
+      additional-cluster-configs:
+        assistant.chat.enabled: true
